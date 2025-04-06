@@ -7,6 +7,7 @@ import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './composables/useAppearance';
 import PrimeVue from 'primevue/config';
+import 'primeicons/primeicons.css'
 import Nora from '@primeuix/themes/nora';
 
 // Extend ImportMeta interface for Vite...
@@ -33,7 +34,11 @@ createInertiaApp({
             .use(ZiggyVue)
             .use(PrimeVue,{
                 theme: {
-                    preset: Nora
+                    preset: Nora,
+                    options: {
+                        darkModeSelector: 'system',
+                        cssLayer: false
+                    }
                 }
             })
             .mount(el);
