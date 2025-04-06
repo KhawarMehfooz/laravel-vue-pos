@@ -7,6 +7,7 @@ import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './composables/useAppearance';
 import PrimeVue from 'primevue/config';
+import ConfirmationService from 'primevue/confirmationservice';
 import 'primeicons/primeicons.css'
 import Nora from '@primeuix/themes/nora';
 
@@ -35,12 +36,9 @@ createInertiaApp({
             .use(PrimeVue,{
                 theme: {
                     preset: Nora,
-                    options: {
-                        darkModeSelector: 'system',
-                        cssLayer: false
-                    }
                 }
             })
+            .use(ConfirmationService)
             .mount(el);
     },
     progress: {

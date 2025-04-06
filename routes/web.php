@@ -15,6 +15,8 @@ Route::get('dashboard', function () {
 Route::middleware(['auth'])->group(function(){
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::post('/categories', [CategoryController::class, 'store']);
+    Route::put('/categories/{category}',[CategoryController::class,'update']);
+    Route::delete('/categories/{category}',[CategoryController::class,'destroy']);
 });
 
 require __DIR__.'/settings.php';
