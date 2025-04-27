@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Category\CategoryController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -10,6 +11,13 @@ Route::get('/', function () {
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware(['auth'])->group(function(){
+    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+    Route::post('/categories', [CategoryController::class, 'store']);
+    Route::put('/categories/{category}',[CategoryController::class,'update']);
+    Route::delete('/categories/{category}',[CategoryController::class,'destroy']);
+});
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
