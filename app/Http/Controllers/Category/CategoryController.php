@@ -30,7 +30,8 @@ class CategoryController extends Controller
                 'currentPage' => $categories->currentPage(),
                 'lastPage' => $categories->lastPage(),
                 'perPage' => $categories->perPage(),
-            ]
+            ],
+            'search' => $request->input('search')
         ]);
     }
 

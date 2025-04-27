@@ -1,20 +1,12 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { useConfirm } from 'primevue/useconfirm';
 import { debounce } from 'lodash';
-
 import { Head, usePage, router } from '@inertiajs/vue3';
 
 const confirm = useConfirm()
-
-const breadcrumbItems: BreadcrumbItem[] = [
-    {
-        title: 'Categories',
-        href: '/categories',
-    },
-];
 
 const { props } = usePage()
 const categories = ref(props.categories || []);
@@ -27,6 +19,24 @@ const page = ref(1)
 const createCategoryDialogueVisible = ref(false)
 const categoryName = ref('')
 const selectedCategory = ref(null)
+
+
+onMounted(() => {
+    searchQuery.value = props.search || '';
+});
+
+watch(() => props.search, (newSearch) => {
+    searchQuery.value = newSearch || '';
+});
+
+
+const breadcrumbItems: BreadcrumbItem[] = [
+    {
+        title: 'Categories',
+        href: '/categories',
+    },
+];
+
 
 const onSearchChange = debounce(() => {
     fetchCategories();
@@ -109,12 +119,19 @@ const confirmDelete = (category) => {
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'p-button-danger',
         accept: () => {
-            fetchCategories();
-            router.delete(`/categories/${category.id}`);
+            router.delete(`/categories/${category.id}`, {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true,
+                onSuccess: () => {
+                    fetchCategories();
+                }
+            });
         },
         position: 'top'
     });
 };
+
 </script>
 
 <template>
