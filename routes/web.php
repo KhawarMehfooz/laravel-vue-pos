@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Company\CompanyController;
+use App\Http\Controllers\Product\ProductController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -23,6 +24,11 @@ Route::middleware(['auth'])->group(function(){
     Route::post('/companies', [CompanyController::class, 'store']);
     Route::put('/companies/{company}',[CompanyController::class,'update']);
     Route::delete('/companies/{company}',[CompanyController::class,'destroy']);
+
+    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::post('/products', [ProductController::class, 'store']);
+    // Route::put('/companies/{company}',[ProductController::class,'update']);
+    // Route::delete('/companies/{company}',[ProductController::class,'destroy']);
 });
 
 require __DIR__.'/settings.php';
