@@ -75,4 +75,32 @@ class ProductController extends Controller
 
         return redirect()->back()->with('success', 'Product created successfully.');
     }
+
+    public function update(Request $request, Product $product){
+        $this->authorize('update', $product);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:30',
+            'category_id' => [
+                'required',
+                Rule::exists('categories', 'id')->where('user_id', Auth::id()),
+                'integer'
+            ],
+            'company_id' => [
+                'required',
+                Rule::exists('companies', 'id')->where('user_id', Auth::id()),
+                'integer'
+            ],
+            'shelf_number' => 'required|string|max:8',
+        ]);
+        $product->update($validated);
+        return redirect()->back()->with('success', 'Product updated successfully.');
+
+    }
+    public function destroy(Product $product)
+    {
+        $this->authorize('delete', $product);
+        $product->delete();
+        return redirect()->back()->with('success', 'Product deleted successfully.');
+    }
 }

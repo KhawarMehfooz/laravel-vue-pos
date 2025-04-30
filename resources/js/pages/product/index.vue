@@ -120,16 +120,16 @@ const onRowsPerPageChange = (event) => {
 };
 
 const saveProduct = () => {
-    if (!formData.value.name.trim()) {
-        alert('Company name is required');
+    if (!formData.value.name.trim() || !formData.value.category_id) {
+        alert('Product name and category is required');
         return;
     }
 
-    const companyData = {
+    const productData = {
         name: formData.value.name,
-        email: formData.value.email.trim() || null,
-        phone_number: formData.value.phone_number.trim() || null,
-        website: formData.value.website.trim() || null
+        category_id: formData.value.category_id || null,
+        company_id: formData.value.company_id || null,
+        shelf_number: formData.value.shelf_number.trim() || null
     };
 
     // Capture current pagination state
@@ -143,7 +143,7 @@ const saveProduct = () => {
 
     if (selectedProduct.value) {
         // Update existing company
-        router.put(`/products/${selectedProduct.value.id}`, companyData, {
+        router.put(`/products/${selectedProduct.value.id}`, productData, {
             onSuccess: () => {
                 // Reset selectedProduct after successful update
                 selectedProduct.value = null;
@@ -154,7 +154,7 @@ const saveProduct = () => {
         });
     } else {
         // Create new company
-        router.post('/products', companyData, {
+        router.post('/products', productData, {
             onSuccess: () => {
                 resetForm()
                 // Refetch with current pagination state
@@ -174,9 +174,9 @@ const resetForm = () => {
     };
 };
 
-const confirmDelete = (company) => {
+const confirmDelete = (product) => {
     confirm.require({
-        message: `Are you sure you want to delete ${company.name} Company?`,
+        message: `Are you sure you want to delete ${product.name} product?`,
         header: 'Delete Confirmation',
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'p-button-danger',
@@ -187,7 +187,7 @@ const confirmDelete = (company) => {
                 rows: rows.value
             };
 
-            router.delete(`/products/${company.id}`, {
+            router.delete(`/products/${product.id}`, {
                 preserveState: true,
                 preserveScroll: true,
                 onSuccess: () => {
@@ -234,7 +234,7 @@ const confirmDelete = (company) => {
                     <template #body="slotProps">
                         <div class="flex items-center gap-2">
                             <Button icon="pi pi-pencil" outlined size="small" severity="info"
-                                @click="openEditCompanyModal(slotProps.data)" />
+                                @click="openEditProductModal(slotProps.data)" />
                             <Button icon="pi pi-trash" outlined size="small" severity="danger"
                                 @click="confirmDelete(slotProps.data)" />
                         </div>
@@ -243,9 +243,9 @@ const confirmDelete = (company) => {
                 <template #empty>No products Found...</template>
             </DataTable>
 
-            <!-- Create Company Dialog -->
+            <!-- Create Product Dialog -->
             <Dialog v-model:visible="createProductDialogVisible" modal
-                :header="selectedProduct ? 'Edit Company' : 'Create Company'" :style="{ width: '40rem' }"
+                :header="selectedProduct ? 'Edit Product' : 'Create Product'" :style="{ width: '40rem' }"
                 position="top">
                 <form @submit.prevent="saveProduct">
                     <div class="flex items-center gap-4">
@@ -256,7 +256,7 @@ const confirmDelete = (company) => {
                         </div>
                         <div class="flex flex-col gap-2 mb-2 w-full">
                             <label for="productCategory">Category</label>
-                            <Select id="productCategory" v-model="formData.category_id" size="small"
+                            <Select id="productCategory" required v-model="formData.category_id" size="small"
                                 :options="categories" optionLabel="name" optionValue="id"
                                 placeholder="Select a Category" class="w-full" />
                         </div>
