@@ -18,5 +18,6 @@ declare module 'vue' {
     InputMask: typeof import('primevue/inputmask')['default']
     InputText: typeof import('primevue/inputtext')['default']
     Select: typeof import('primevue/select')['default']
+    Toast: typeof import('primevue/toast')['default']
   }
 }

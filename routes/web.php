@@ -34,6 +34,7 @@ Route::middleware(['auth'])->group(function(){
     Route::delete('/products/{product}',[ProductController::class,'destroy']);
 
     Route::get('/settings/app', [AppSettingsController::class, 'index'])->name('app-settings.index');
+    Route::post('/settings/app', [AppSettingsController::class, 'store']);
 });
 
 require __DIR__.'/settings.php';
