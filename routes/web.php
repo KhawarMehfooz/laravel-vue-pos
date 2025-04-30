@@ -16,11 +16,13 @@ Route::get('dashboard', function () {
 
 Route::middleware(['auth'])->group(function(){
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+    Route::get('/categories/search', [CategoryController::class, 'search']);
     Route::post('/categories', [CategoryController::class, 'store']);
     Route::put('/categories/{category}',[CategoryController::class,'update']);
     Route::delete('/categories/{category}',[CategoryController::class,'destroy']);
 
     Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
+    Route::get('/companies/search', [CompanyController::class, 'search']);
     Route::post('/companies', [CompanyController::class, 'store']);
     Route::put('/companies/{company}',[CompanyController::class,'update']);
     Route::delete('/companies/{company}',[CompanyController::class,'destroy']);

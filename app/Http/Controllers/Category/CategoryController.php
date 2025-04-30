@@ -49,6 +49,22 @@ class CategoryController extends Controller
         return redirect()->back()->with('success', 'Category created successfully.');
     }
 
+    public function search(Request $request)
+    {
+        $search = $request->input('search', '');
+
+        $categories = Auth::user()
+            ->categories()
+            ->where('name', 'like', "%{$search}%")
+            ->select('id', 'name')
+            ->orderByRaw('LOWER(name) ASC')
+            ->limit(10)
+            ->get();
+
+        return response()->json($categories);
+    }
+
+
     public function update(Request $request, Category $category)
     {
         $this->authorize('update', $category);

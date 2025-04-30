@@ -5,6 +5,7 @@ import { type BreadcrumbItem } from '@/types';
 import { useConfirm } from 'primevue/useconfirm';
 import { debounce } from 'lodash';
 import { Head, usePage, router } from '@inertiajs/vue3';
+import axios from 'axios'
 
 const confirm = useConfirm()
 
@@ -198,6 +199,36 @@ const confirmDelete = (product) => {
         position: 'top'
     });
 };
+
+const fetchCategories = debounce(async (query) => {
+    try {
+        const response = await axios.get('/categories/search', {
+            params: { search: query }
+        })
+        categories.value = response.data
+    } catch (error) {
+        console.error('Failed to load categories:', error)
+    }
+}, 300) // 300ms debounce
+
+const onCategoryFilter = (event) => {
+    fetchCategories(event.value)
+}
+
+const fetchCompanies = debounce(async (query) => {
+    try {
+        const response = await axios.get('/companies/search', {
+            params: { search: query }
+        })
+        companies.value = response.data
+    } catch (error) {
+        console.error('Failed to load companies:', error)
+    }
+}, 300) // 300ms debounce
+
+const onCompanyFilter = (event) => {
+    fetchCompanies(event.value)
+}
 </script>
 
 <template>
@@ -257,16 +288,15 @@ const confirmDelete = (product) => {
                         <div class="flex flex-col gap-2 mb-2 w-full">
                             <label for="productCategory">Category</label>
                             <Select id="productCategory" required v-model="formData.category_id" size="small"
-                                :options="categories" optionLabel="name" optionValue="id"
+                                :options="categories" optionLabel="name" optionValue="id"  filter @filter="onCategoryFilter"
                                 placeholder="Select a Category" class="w-full" />
                         </div>
                     </div>
                     <div class="flex items-center gap-4">
                         <div class="flex flex-col gap-2 mb-2 w-full">
                             <label for="company_id">Company</label>
-                            <Select id="company_id" v-model="formData.company_id" size="small"
-                                :options="companies" optionLabel="name" optionValue="id" placeholder="Select a Company"
-                                class="w-full" />
+                            <Select id="company_id" v-model="formData.company_id" size="small" :options="companies" filter @filter="onCompanyFilter"
+                                optionLabel="name" optionValue="id" placeholder="Select a Company" class="w-full" />
                         </div>
                         <div class="flex flex-col gap-2 mb-2 w-full">
                             <label for="shelf_number">Shelf Number</label>

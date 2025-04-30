@@ -37,6 +37,19 @@ class CompanyController extends Controller
 
     }
 
+    public function search(Request $request){
+        $search = $request->input('search','');
+        $companies = Auth::user()
+            ->companies()
+            ->where('name','like',"%{$search}%")
+            ->select('id','name')
+            ->orderByRaw('LOWER(name) ASC')
+            ->limit(10)
+            ->get();
+
+        return response()->json($companies);
+    }
+
     public function store(Request $request){
         $request->validate([
             'name'         => 'required|string|max:30',
