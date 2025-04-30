@@ -3,6 +3,7 @@
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Product\ProductController;
+use App\Http\Controllers\Settings\AppSettingsController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -31,6 +32,8 @@ Route::middleware(['auth'])->group(function(){
     Route::post('/products', [ProductController::class, 'store']);
     Route::put('/products/{product}',[ProductController::class,'update']);
     Route::delete('/products/{product}',[ProductController::class,'destroy']);
+
+    Route::get('/settings/app', [AppSettingsController::class, 'index'])->name('app-settings.index');
 });
 
 require __DIR__.'/settings.php';
