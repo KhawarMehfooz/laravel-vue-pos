@@ -15,6 +15,10 @@ declare module 'vue' {
     Dialog: typeof import('primevue/dialog')['default']
     IconField: typeof import('primevue/iconfield')['default']
     InputIcon: typeof import('primevue/inputicon')['default']
+    InputMask: typeof import('primevue/inputmask')['default']
+    InputNumber: typeof import('primevue/inputnumber')['default']
     InputText: typeof import('primevue/inputtext')['default']
+    Select: typeof import('primevue/select')['default']
+    Toast: typeof import('primevue/toast')['default']
   }
 }

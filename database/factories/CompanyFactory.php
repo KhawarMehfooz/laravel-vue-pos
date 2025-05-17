@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Company;
 
@@ -20,6 +21,7 @@ class CompanyFactory extends Factory
     {
         return [
             "name"=>$this->faker->company,
+            'user_id' => User::factory(),
             "email"=>$this->faker->unique()->safeEmail,
             "phone_number"=>$this->faker->phoneNumber,
             "website"=>$this->faker->url

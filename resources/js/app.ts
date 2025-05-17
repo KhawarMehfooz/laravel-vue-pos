@@ -10,6 +10,7 @@ import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import 'primeicons/primeicons.css'
 import Nora from '@primeuix/themes/nora';
+import ToastService from 'primevue/toastservice';
 
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
@@ -39,6 +40,7 @@ createInertiaApp({
                 }
             })
             .use(ConfirmationService)
+            .use(ToastService)
             .mount(el);
     },
     progress: {
