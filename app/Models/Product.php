@@ -14,6 +14,9 @@ class Product extends Model
         'category_id',
         'company_id',
         'shelf_number',
+        'retail_price',
+        'purchase_price',
+        'barcode'
     ];
 
     public function category(){

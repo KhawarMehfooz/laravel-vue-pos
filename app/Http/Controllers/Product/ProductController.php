@@ -68,7 +68,13 @@ class ProductController extends Controller
                 Rule::exists('companies', 'id')->where('user_id', Auth::id()),
                 'integer'
             ],
-            'shelf_number' => 'required|string|max:8',
+            'barcode' => [
+                'required',
+                'numeric',
+                Rule::unique('products')->where('user_id', Auth::id()),
+            ],
+            'purchase_price' => 'required|numeric|min:0|max:999999.99',
+            'retail_price' => 'required|numeric|min:0|max:999999.99|gte:purchase_price',
         ]);
 
         $product = Auth::user()->products()->create($validated);
@@ -76,26 +82,37 @@ class ProductController extends Controller
         return redirect()->back()->with('success', 'Product created successfully.');
     }
 
-    public function update(Request $request, Product $product){
+    public function update(Request $request, Product $product)
+    {
         $this->authorize('update', $product);
 
         $validated = $request->validate([
             'name' => 'required|string|max:30',
             'category_id' => [
                 'required',
+                'integer',
                 Rule::exists('categories', 'id')->where('user_id', Auth::id()),
-                'integer'
             ],
             'company_id' => [
                 'required',
+                'integer',
                 Rule::exists('companies', 'id')->where('user_id', Auth::id()),
-                'integer'
             ],
             'shelf_number' => 'required|string|max:8',
+            'barcode' => [
+                'required',
+                'string',
+                Rule::unique('products')
+                    ->where('user_id', Auth::id())
+                    ->ignore($product->id),
+            ],
+            'purchase_price' => 'required|numeric|min:0|max:999999.99',
+            'retail_price' => 'required|numeric|min:0|max:999999.99|gte:purchase_price',
         ]);
-        $product->update($validated);
-        return redirect()->back()->with('success', 'Product updated successfully.');
 
+        $product->update($validated);
+
+        return redirect()->back()->with('success', 'Product updated successfully.');
     }
     public function destroy(Product $product)
     {

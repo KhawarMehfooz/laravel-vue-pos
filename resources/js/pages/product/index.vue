@@ -27,6 +27,9 @@ const formData = ref({
     category_id: '',
     company_id: '',
     shelf_number: '',
+    retail_price: 0,
+    purchase_price: 0,
+    barcode: '',
 })
 
 const selectedProduct = ref(null)
@@ -75,6 +78,9 @@ const openCreateProductModal = () => {
         category_id: '',
         company_id: '',
         shelf_number: '',
+        purchase_price: 0,
+        retail_price: 0,
+        barcode: '',
     };
     selectedProduct.value = null;
     createProductDialogVisible.value = true;
@@ -86,6 +92,9 @@ const openEditProductModal = (product) => {
         shelf_number: product.shelf_number || '',
         category_id: product.category_id || '',
         company_id: product.company_id || '',
+        purchase_price: product.purchase_price || 0,
+        retail_price: product.retail_price || 0,
+        barcode: product.barcode || 0,
     };
     selectedProduct.value = product;
     createProductDialogVisible.value = true;
@@ -120,18 +129,30 @@ const onRowsPerPageChange = (event) => {
     fetchProducts({ page: page.value, rows: rows.value });
 };
 
+const generateRandomBarcode = () => {
+    const timestamp = Date.now().toString();
+    const randomDigits = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    return String(timestamp.slice(-10) + randomDigits);
+};
+
 const saveProduct = () => {
     if (!formData.value.name.trim() || !formData.value.category_id) {
         alert('Product name and category is required');
         return;
     }
 
+    // Important: Ensure numeric values are converted properly
     const productData = {
         name: formData.value.name,
         category_id: formData.value.category_id || null,
         company_id: formData.value.company_id || null,
-        shelf_number: formData.value.shelf_number.trim() || null
+        shelf_number: formData.value.shelf_number?.trim() || null,
+        purchase_price: Number(formData.value.purchase_price) || 0,
+        retail_price: Number(formData.value.retail_price) || 0,
+        barcode: formData.value.barcode ? String(formData.value.barcode) : generateRandomBarcode(),
     };
+
+    console.log("Product Data: ", productData)
 
     // Capture current pagination state
     const currentPaginationState = {
@@ -143,21 +164,21 @@ const saveProduct = () => {
     createProductDialogVisible.value = false;
 
     if (selectedProduct.value) {
-        // Update existing company
+        // Update existing product
         router.put(`/products/${selectedProduct.value.id}`, productData, {
             onSuccess: () => {
                 // Reset selectedProduct after successful update
                 selectedProduct.value = null;
                 // Refetch with current pagination state
                 fetchProducts(currentPaginationState);
-                resetForm()
+                resetForm();
             }
         });
     } else {
-        // Create new company
+        // Create new product
         router.post('/products', productData, {
             onSuccess: () => {
-                resetForm()
+                resetForm();
                 // Refetch with current pagination state
                 fetchProducts(currentPaginationState);
             }
@@ -169,9 +190,12 @@ const saveProduct = () => {
 const resetForm = () => {
     formData.value = {
         name: '',
-        email: '',
-        phone_number: '',
-        website: ''
+        category_id: '',
+        company_id: '',
+        shelf_number: '',
+        purchase_price: 0,
+        retail_price: 0,
+        barcode: '',
     };
 };
 
@@ -259,7 +283,9 @@ const onCompanyFilter = (event) => {
                 <Column field="name" header="Product Name" />
                 <Column field="category.name" header="Category" />
                 <Column field="company.name" header="Company" />
-                <Column field="shelf_number" header="Shelf" />
+                <Column field="purchase_price" header="Purchase Price" />
+                <Column field="retail_price" header="Retail Price" />
+                <Column field="barcode" header="Barcode" />
 
                 <Column header="Actions">
                     <template #body="slotProps">
@@ -288,20 +314,39 @@ const onCompanyFilter = (event) => {
                         <div class="flex flex-col gap-2 mb-2 w-full">
                             <label for="productCategory">Category</label>
                             <Select id="productCategory" required v-model="formData.category_id" size="small"
-                                :options="categories" optionLabel="name" optionValue="id"  filter @filter="onCategoryFilter"
-                                placeholder="Select a Category" class="w-full" />
+                                :options="categories" optionLabel="name" optionValue="id" filter
+                                @filter="onCategoryFilter" placeholder="Select a Category" class="w-full" />
                         </div>
                     </div>
                     <div class="flex items-center gap-4">
                         <div class="flex flex-col gap-2 mb-2 w-full">
                             <label for="company_id">Company</label>
-                            <Select id="company_id" v-model="formData.company_id" size="small" :options="companies" filter @filter="onCompanyFilter"
-                                optionLabel="name" optionValue="id" placeholder="Select a Company" class="w-full" />
+                            <Select id="company_id" v-model="formData.company_id" size="small" :options="companies"
+                                filter @filter="onCompanyFilter" optionLabel="name" optionValue="id"
+                                placeholder="Select a Company" class="w-full" />
                         </div>
                         <div class="flex flex-col gap-2 mb-2 w-full">
                             <label for="shelf_number">Shelf Number</label>
                             <InputText v-model="formData.shelf_number" required size="small" class="w-full"
                                 id="shelf_number" autocomplete="off" />
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="flex flex-col gap-2 mb-2 w-full">
+                            <label for="purchase_price">Purchase Price</label>
+                            <InputNumber v-model="formData.purchase_price" required size="small" :min="0" class="w-full"
+                                id="purchase_price" autocomplete="off" :useGrouping="false" />
+                        </div>
+                        <div class="flex flex-col gap-2 mb-2 w-full">
+                            <label for="retail_price">Retail Price</label>
+                            <InputNumber v-model="formData.retail_price" required size="small"
+                                :min="formData.purchase_price" class="w-full" id="retail_price" autocomplete="off"
+                                :useGrouping="false" />
+                        </div>
+                        <div class="flex flex-col gap-2 mb-2 w-full">
+                            <label for="barcode">Barcode</label>
+                            <InputText type="number" v-model="formData.barcode" size="small" :min="0" class="w-full"
+                                id="barcode" autocomplete="off" :useGrouping="false" />
                         </div>
                     </div>
 
